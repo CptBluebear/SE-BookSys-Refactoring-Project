@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.corodiak.booksys.mapper.CustomerMapper">
+
+	<resultMap type="Customer" id="Customer">
+		<id column="oid" property="customerOid" />
+		<result column="id" property="customerId" />
+		<result column="password" property="customerPassword" />
+		<result column="name" property="customerName" />
+		<result column="phoneNumber" property="customerPhoneNumber" />
+		<result column="birthday" property="customerBirthday" />
+		<result column="isAdmin" property="customerIsAdmin" />
+	</resultMap>
+
+	<select id="selectCustomerByIdandPassword"
+		parameterType="Map" resultMap="Customer">
+		SELECT `oid`, `id`, `name`, `phoneNumber`, `birthday`, `isAdmin`
+		FROM `Customer`
+		WHERE `id`=#{id} AND `password`=#{password}
+	</select>
+
+	<select id="selectCustomerList" resultMap="Customer">
+		SELECT `oid`, `id`, `password`, `name`, `phoneNumber`, `birthday`, `isAdmin`
+		FROM `Customer`
+		ORDER BY `oid`
+	</select>
+	
+	<select id="selectCustomerById" parameterType="Map" resultMap="Customer">
+		SELECT `oid`, `id`, `password`, `name`, `phoneNumber`, `birthday`, `isAdmin`
+		FROM `Customer`
+		WHERE `id` = #{id}
+	</select>
+	
+	<select id="selectCustomerByOid" parameterType="Map" resultMap="Customer">
+		SELECT `oid`, `id`, `password`, `name`, `phoneNumber`, `birthday`, `isAdmin`
+		FROM `Customer`
+		WHERE `oid` = #{oid}
+	</select>
+	
+	<insert id="insertCustomer" parameterType="Map">
+		INSERT INTO `Customer` (`id`, `password`, `name`, `phoneNumber`, `birthday`)
+		VALUES (#{customer.customerId}, #{customer.customerPassword}, #{customer.customerName}, #{customer.customerPhoneNumber}, #{customer.customerBirthday})
+		<selectKey keyProperty="customer.customerOid" resultType="int">
+        	SELECT LAST_INSERT_ID()
+   	 	</selectKey>
+	</insert>
+	
+</mapper>

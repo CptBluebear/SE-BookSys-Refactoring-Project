@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.corodiak.booksys.mapper.ReservationMapper">
+	<resultMap type="Reservation" id="Reservation">
+		<id column="oid" property="reservationOid" />
+		<result column="booking_oid" property="bookingOid" />
+		<result column="covers" property="bookingCovers" />
+		<result column="date" property="bookingDate" />
+		<result column="time" property="bookingTime" />
+		<result column="authPassword" property="reservationAuthPassword" />
+		<result column="arrivalTime" property="reservationArrivalTime"/>
+		<association column="customer_oid" property="reservationCustomer" javaType="org.corodiak.booksys.domain.Customer" resultMap="Customer" />
+		<association column="table_oid" property="reservationTable" javaType="org.corodiak.booksys.domain.Table" resultMap="Table" />
+	</resultMap>
+	
+	<resultMap type="Customer" id="Customer">
+		<id column="customer_oid" property="customerOid" />
+		<result column="id" property="customerId" />
+		<result column="password" property="customerPassword" />
+		<result column="name" property="customerName" />
+		<result column="phoneNumber" property="customerPhoneNumber" />
+		<result column="birthday" property="customerBirthday" />
+	</resultMap>
+	
+	<resultMap type="Table" id="Table">
+		<result column="table_oid" property="tableOid" />
+		<result column="number" property="tableNumber" />
+		<result column="places" property="tablePlaces" />
+	</resultMap>
+	
+	<select id="selectReservationByDate" parameterType="Map" resultMap="Reservation">
+		SELECT
+			`Reservation`.`oid`, `Reservation`.`authPassword`, `Reservation`.`arrivalTime`,
+			`Booking`.`oid` AS 'booking_oid', `Booking`.`covers`, `Booking`.`date`, `Booking`.`time`,
+			`Table`.`oid` AS 'table_oid', `Table`.`number`, `Table`.`places`,
+			`Customer`.`oid` AS `customer_oid`, `Customer`.`id`, `Customer`.`name`, `Customer`.`phoneNumber`, `Customer`.`birthday`
+		FROM `Reservation`
+		JOIN `Booking` ON `Reservation`.`booking_id` = `Booking`.`oid`
+		JOIN `Table` ON `Reservation`.`table_id` = `Table`.`oid`
+		JOIN `Customer` ON `Reservation`.`customer_id` = `Customer`.`oid`
+		WHERE `Booking`.`date` = #{date}
+	</select>
+	
+	<select id="selectReservationByCustomerOid" parameterType="Map" resultMap="Reservation">
+		SELECT
+			`Reservation`.`oid`, `Reservation`.`authPassword`, `Reservation`.`arrivalTime`,
+			`Booking`.`oid` AS 'booking_oid', `Booking`.`covers`, `Booking`.`date`, `Booking`.`time`,
+			`Table`.`oid` AS 'table_oid', `Table`.`number`, `Table`.`places`,
+			`Customer`.`oid` AS `customer_oid`, `Customer`.`id`, `Customer`.`name`, `Customer`.`phoneNumber`, `Customer`.`birthday`
+		FROM `Reservation`
+		JOIN `Booking` ON `Reservation`.`booking_id` = `Booking`.`oid`
+		JOIN `Table` ON `Reservation`.`table_id` = `Table`.`oid`
+		JOIN `Customer` ON `Reservation`.`customer_id` = `Customer`.`oid`
+		WHERE `Reservation`.`customer_id` = #{customerOid}
+	</select>
+	
+	<select id="selectReservationByOid" parameterType="Map" resultMap="Reservation">
+		SELECT
+			`Reservation`.`oid`, `Reservation`.`authPassword`, `Reservation`.`arrivalTime`,
+			`Booking`.`oid` AS 'booking_oid', `Booking`.`covers`, `Booking`.`date`, `Booking`.`time`,
+			`Table`.`oid` AS 'table_oid', `Table`.`number`, `Table`.`places`,
+			`Customer`.`oid` AS `customer_oid`, `Customer`.`id`, `Customer`.`name`, `Customer`.`phoneNumber`, `Customer`.`birthday`
+		FROM `Reservation`
+		JOIN `Booking` ON `Reservation`.`booking_id` = `Booking`.`oid`
+		JOIN `Table` ON `Reservation`.`table_id` = `Table`.`oid`
+		JOIN `Customer` ON `Reservation`.`customer_id` = `Customer`.`oid`
+		WHERE `Reservation`.`oid` = #{oid}
+	</select>
+	
+	<insert id="insertReservation">
+		INSERT INTO `Reservation` (`booking_id`, `customer_id`, `table_id`, `authPassword`)
+		VALUES (#{reservation.bookingOid}, #{customerOid}, #{tableOid}, #{reservation.reservationAuthPassword})
+		<selectKey keyProperty="reservation.reservationOid" resultType="int">
+        	SELECT LAST_INSERT_ID()
+   	 	</selectKey>
+	</insert>
+	
+	<delete id="deleteReservationByOid" parameterType="Map">
+		DELETE FROM `Reservation` WHERE `oid` = #{oid}
+	</delete>
+	
+	<update id="updateReservationArrivalTimeByOid" parameterType="Map">
+		UPDATE `Reservation` SET `arrivalTime` = #{arrivalTime} WHERE `oid` = #{oid}
+	</update>
+	
+	<select id="selectReservationByDateAndBetweenTime" parameterType="Map" resultMap="Reservation">
+		SELECT
+			`Reservation`.`oid`, `Reservation`.`authPassword`, `Reservation`.`arrivalTime`,
+			`Booking`.`oid` AS 'booking_oid', `Booking`.`covers`, `Booking`.`date`, `Booking`.`time`,
+			`Table`.`oid` AS 'table_oid', `Table`.`number`, `Table`.`places`,
+			`Customer`.`oid` AS `customer_oid`, `Customer`.`id`, `Customer`.`name`, `Customer`.`phoneNumber`, `Customer`.`birthday`
+		FROM `Reservation`
+		JOIN `Booking` ON `Reservation`.`booking_id` = `Booking`.`oid`
+		JOIN `Table` ON `Reservation`.`table_id` = `Table`.`oid`
+		JOIN `Customer` ON `Reservation`.`customer_id` = `Customer`.`oid`
+		WHERE
+			`Booking`.`date` = #{date}
+			AND `Booking`.`time` BETWEEN #{time1} AND #{time2}
+	</select>
+	
+</mapper>

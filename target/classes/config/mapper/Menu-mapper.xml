@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.corodiak.booksys.mapper.MenuMapper">
+	<resultMap type="Menu" id="Menu">
+		<id column="oid" property="menuOid" />
+		<result column="name" property="menuName" />
+		<result column="price" property="menuPrice" />
+		<result column="description" property="menuDescription" />
+		<result column="imagePath" property="menuImagePath" />
+	</resultMap>
+	
+	<select id="selectMenuList" resultMap="Menu">
+		SELECT `oid`, `name`, `price`, `description`, `imagePath`
+		FROM `Menu`
+		ORDER BY `oid`
+	</select>
+	
+	<select id="selectMenuByOid" parameterType="Map" resultMap="Menu">
+		SELECT  `oid`, `name`, `price`, `description`, `imagePath`
+		FROM `Menu`
+		WHERE `oid` = #{oid}
+	</select>
+	
+	<insert id="insertMenu" parameterType="Map">
+		INSERT INTO `Menu` (`name`, `price`, `description`, `imagePath`)
+		VALUES (#{menu.menuName}, #{menu.menuPrice}, #{menu.menuDescription}, #{menu.menuImagePath})
+		<selectKey keyProperty="menu:menuOid" resultType="int">
+        	SELECT LAST_INSERT_ID()
+   	 	</selectKey>
+	</insert>
+	
+	<delete id="deleteMenuByOid" parameterType="Map">
+		DELETE FROM `Menu` WHERE `oid` = #{oid}
+	</delete>
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+ 
+<configuration>
+    <typeAliases>
+    	<typeAlias alias="Customer" type="org.corodiak.booksys.domain.Customer"/>
+    	<typeAlias alias="Menu" type="org.corodiak.booksys.domain.Menu"/>
+    	<typeAlias alias="Order" type="org.corodiak.booksys.domain.Order"/>
+    	<typeAlias alias="Reservation" type="org.corodiak.booksys.domain.Reservation"/>
+    	<typeAlias alias="Table" type="org.corodiak.booksys.domain.Table"/>
+    	<typeAlias alias="Waiting" type="org.corodiak.booksys.domain.Waiting"/>
+    	<typeAlias alias="WalkIn" type="org.corodiak.booksys.domain.WalkIn"/>
+    	<typeAlias alias="Booking" type="org.corodiak.booksys.domain.BookingImpl"/>
+    </typeAliases>
+</configuration>

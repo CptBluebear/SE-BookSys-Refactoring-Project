@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.corodiak.booksys.mapper.TableMapper">
+	<resultMap type="Table" id="Table">
+		<result column="oid" property="tableOid" />
+		<result column="number" property="tableNumber" />
+		<result column="places" property="tablePlaces" />
+	</resultMap>
+	
+	<select id="selectTableList" resultMap="Table">
+		SELECT `oid`, `number`, `places`
+		FROM `Table`
+		ORDER BY `number`
+	</select>
+	
+	<insert id="insertTable" parameterType="Map">
+		INSERT INTO `Table` (`number`, `places`)
+		VALUES (#{table.tableNumber}, #{table.tablePlaces})
+		<selectKey keyProperty="table.tableOid" resultType="int">
+        	SELECT LAST_INSERT_ID()
+   	 	</selectKey>
+	</insert>
+	
+	<select id="selectTableCount" resultType="int">
+		SELECT count(*) FROM `Table`
+	</select>
+	
+	
+	
+</mapper>

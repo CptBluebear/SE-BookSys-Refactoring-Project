@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.corodiak.booksys.mapper.BookingMapper">
+	<resultMap type="Booking" id="Booking">
+		<id column="oid" property="bookingOid" />
+		<result column="covers" property="bookingCovers" />
+		<result column="date" property="bookingDate" />
+		<result column="time" property="bookingTime" />
+	</resultMap>
+	
+	<select id="selectBookingList" resultMap="Booking">
+		SELECT `oid`, `covers`, `date`, `time`
+		FROM `Booking`
+		ORDER BY `oid`
+	</select>
+	<!-- 
+	<select id="selectBookingListByDate" parameterType="Map" resultMap="Booking">
+		SELECT `oid`, `covers`, `date`, `time`
+		FROM `Booking`
+		WHERE `date` = #{date}
+	</select>
+	 -->
+	<insert id="insertBooking" parameterType="Map">
+		INSERT INTO `Booking` (`covers`, `date`, `time`)
+		VALUES (#{booking.bookingCovers}, #{booking.bookingDate}, #{booking.bookingTime})
+		<selectKey keyProperty="booking.bookingOid" resultType="int">
+        	SELECT LAST_INSERT_ID()
+   	 	</selectKey>
+	</insert>
+	
+	<select id="selectFilledDataByDate" parameterType="Map" resultMap="Booking">
+		SELECT `Booking`.`oid`, `Booking`.`covers`, `Booking`. `date`, `Booking`.`time`
+		FROM `Booking`
+		WHERE `Booking`.`date` = #{date}
+		AND EXISTS
+		(
+			SELECT `Reservation`.`booking_id` AS `oid` FROM `Reservation` WHERE `Reservation`.`booking_id` = `Booking`.`oid`
+			UNION
+			SELECT `WalkIn`.`booking_id` AS `oid` FROM `WalkIn` WHERE `WalkIn`.`booking_id` = `Booking`.`oid`
+		)
+	</select>
+	
+	<delete id="deleteBookingByOid" parameterType="Map">
+		DELETE FROM `Booking` WHERE `oid` = #{oid}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.corodiak.booksys.mapper.OrderMapper">
+	<resultMap type="Order" id="Order">
+		<result column="oid" property="orderOid" />
+		<result column="booking_id" property="orderBookingOid" />
+		<result column="quantity" property="orderQuantity" />
+		<association column="menu_id" property="orderMenu" javaType="org.corodiak.booksys.domain.Menu" resultMap="Menu" />
+	</resultMap>
+	
+	<resultMap type="Menu" id="Menu">
+		<result column="menu_oid" property="menuOid" />
+		<result column="name" property="menuName" />
+		<result column="price" property="menuPrice" />
+		<result column="description" property="menuDescription" />
+		<result column="imagePath" property="menuImagePath" />
+	</resultMap>
+	
+	<select id="selectOrderByOid" parameterType="Map" resultMap="Order">
+		SELECT `Order`.`oid`, `Order`.`booking_id`, `Order`.`quantity`,
+			`Menu`.`oid` AS `menu_oid`, `Menu`.`name`, `Menu`.`price`, `Menu`.`description`, `Menu`.`imagePath`
+		FROM `Order`
+		JOIN `Menu` ON `Order`.`menu_id` = `Menu`.`oid`
+		WHERE `Order`.`oid` = #{oid}
+		ORDER BY `Order`.`oid`
+	</select>
+	
+	<select id="selectOrderList" resultMap="Order">
+		SELECT `Order`.`oid`, `Order`.`booking_id`, `Order`.`quantity`,
+			`Menu`.`oid` AS `menu_oid`, `Menu`.`name`, `Menu`.`price`, `Menu`.`description`, `Menu`.`imagePath`
+		FROM `Order`
+		JOIN `Menu` ON `Order`.`menu_id` = `Menu`.`oid`
+		ORDER BY `Order`.`oid`
+	</select>
+	
+	<select id="selectOrderByDate" parameterType="Map" resultMap="Order">
+		SELECT
+			`Order`.`oid`, `Order`.`booking_id`, `Order`.`quantity`,
+			`Menu`.`oid` AS `menu_oid`, `Menu`.`name`, `Menu`.`price`, `Menu`.`description`, `Menu`.`imagePath`
+		FROM `Order`
+		JOIN `Menu` ON `Order`.`menu_id` = `Menu`.`oid`
+		JOIN `Booking` ON `Order`.`booking_id` = `Booking`.`oid`
+		WHERE `Booking`.`date` = #{date}
+		ORDER BY `Order`.`oid` DESC
+	</select>
+	
+	<select id="selectOrderByBookingOid" parameterType="Map" resultMap="Order">
+		SELECT
+			`Order`.`oid`, `Order`.`booking_id`, `Order`.`quantity`,
+			`Menu`.`oid` AS `menu_oid`, `Menu`.`name`, `Menu`.`price`, `Menu`.`description`, `Menu`.`imagePath`
+		FROM `Order`
+		JOIN `Menu` ON `Order`.`menu_id` = `Menu`.`oid`
+		JOIN `Booking` ON `Order`.`booking_id` = `Booking`.`oid`
+		WHERE `Order`.`booking_id` = #{bookingOid}
+	</select>
+	
+	<insert id="insertOrder" parameterType="Map">
+		INSERT INTO `Order` (`booking_id`, `quantity`, `menu_id`)
+		VALUES (#{order.orderBookingOid}, #{order.orderQuantity}, #{menuOid})
+		<selectKey keyProperty="order.orderOid" resultType="int">
+        	SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+</mapper>

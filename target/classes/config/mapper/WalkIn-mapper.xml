@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.corodiak.booksys.mapper.WalkInMapper">
+	<resultMap type="WalkIn" id="WalkIn">
+		<result column="oid" property="walkInOid" />
+		<result column="booking_oid" property="bookingOid" />
+		<result column="covers" property="bookingCovers" />
+		<result column="date" property="bookingDate" />
+		<result column="time" property="bookingTime" />
+		<association column="table_id" property="walkInTable" javaType="org.corodiak.booksys.domain.Table" resultMap="Table" />
+	</resultMap>
+	<!-- 
+	<resultMap type="Booking" id="Booking">
+		<result column="oid" property="oid" />
+		<result column="covers" property="covers" />
+		<result column="date" property="date" />
+		<result column="time" property="time" />
+	</resultMap>
+	-->
+	
+	<resultMap type="Table" id="Table">
+		<result column="table_oid" property="tableOid" />
+		<result column="number" property="tableNumber" />
+		<result column="places" property="tablePlaces" />
+	</resultMap>
+	
+	<select id="selectBookableWalkInList" resultMap="WalkIn">
+		SELECT
+			`WalkIn`.`oid`,
+			`Booking`.`oid` AS 'booking_oid', `Booking`.`covers`, `Booking`.`date`, `Booking`.`time`,
+			`Table`.`oid` AS 'table_oid', `Table`.`number`, `Table`.`places`
+		FROM `WalkIn`
+		JOIN `Booking` ON `WalkIn`.`booking_id` = `Booking`.`oid`
+		JOIN `Table` ON `WalkIn`.`table_id` = `Table`.`oid`
+	</select>
+	
+	<select id="selectOne" resultMap="WalkIn">
+		SELECT
+			`WalkIn`.`oid`,
+			`Booking`.`oid` AS 'booking_oid', `Booking`.`covers`, `Booking`.`date`, `Booking`.`time`,
+			`Table`.`oid` AS 'table_oid', `Table`.`number`, `Table`.`places`
+		FROM `WalkIn`
+		JOIN `Booking` ON `WalkIn`.`booking_id` = `Booking`.`oid`
+		JOIN `Table` ON `WalkIn`.`table_id` = `Table`.`oid`
+		LIMIT 1
+	</select>
+
+	<insert id="insertWalkIn" parameterType="Map">
+		INSERT INTO `WalkIn` (`booking_id`, `table_id`)
+		VALUES (#{walkIn.bookingOid}, #{tableOid})
+		<selectKey keyProperty="walkIn.walkInOid" resultType="int">
+        	SELECT LAST_INSERT_ID()
+   	 	</selectKey>
+	</insert>
+	
+	<select id="selectWalkInByDate" parameterType="Map" resultMap="WalkIn">
+		SELECT
+			`WalkIn`.`oid`,
+			`Booking`.`oid` AS 'booking_oid', `Booking`.`covers`, `Booking`.`date`, `Booking`.`time`,
+			`Table`.`oid` AS 'table_oid', `Table`.`number`, `Table`.`places`
+		FROM `WalkIn`
+		JOIN `Booking` ON `WalkIn`.`booking_id` = `Booking`.`oid`
+		JOIN `Table` ON `WalkIn`.`table_id` = `Table`.`oid`
+		WHERE `Booking`.`date` = #{date}
+	</select>
+	
+	<select id="selectWalkInByDateAndBetweenTime" parameterType="Map" resultMap="WalkIn">
+		SELECT
+			`WalkIn`.`oid`,
+			`Booking`.`oid` AS 'booking_oid', `Booking`.`covers`, `Booking`.`date`, `Booking`.`time`,
+			`Table`.`oid` AS 'table_oid', `Table`.`number`, `Table`.`places`
+		FROM `WalkIn`
+		JOIN `Booking` ON `WalkIn`.`booking_id` = `Booking`.`oid`
+		JOIN `Table` ON `WalkIn`.`table_id` = `Table`.`oid`
+		WHERE
+			`Booking`.`date` = #{date}
+			AND `Booking`.`time` BETWEEN #{time1} AND #{time2}
+	</select>
+	
+</mapper>
